@@ -3,8 +3,8 @@
 
 import { getCarBrands } from './data.js';
 import { observeList } from './event-handlers.js';
-import { dispatchShowGetFakeTodos, dispatchRemoveAllGroups, dispatchRemoveAllTodos, dispatchRemoveGroup, dispatchRemoveTodo, dispatchShowEditGroupForm, dispatchShowEditTodoForm, dispatchToggleTodo } from './events.js';
-import { handleAddTodo, handleAddTodoGroup, handleEditGroup, handleEditTodo } from './form-handlers.js';
+import { dispatchShowGetFakeModels, dispatchRemoveAllBrands, dispatchRemoveAllModels, dispatchRemoveBrand, dispatchRemoveModel, dispatchShowEditBrandForm, dispatchShowEditModelForm, dispatchToggleModel } from './events.js';
+import { handleAddModel, handleAddBrand, handleEditBrand, handleEditModel } from './form-handlers.js';
 import { Maybe, fragment } from './helpers.js';
 import { addIcon, backIcon, doneIcon, downloadIcon, editIcon, showIcon, progressIcon, removeIcon, hideIcon, homeIcon } from "./icons.js";
 
@@ -14,26 +14,26 @@ export function renderNotFound() {
   `;
 }
 
-export function renderGroups() {
-  const groups = getCarBrands();
+export function renderBrands() {
+  const brands = getCarBrands();
   const page = fragment/*html*/`
-    <div class="groups">
+    <div class="brands">
       <div class="header">
-        <h1 class="title header__title">Groups of todos</h1>
+        <h1 class="title header__title">Brands and Models</h1>
         <div class="header__toolbar toolbar">
-          <button class="button button_danger" onclick="${dispatchRemoveAllGroups()}">
+          <button class="button button_danger" onclick="${dispatchRemoveAllBrands()}">
             ${removeIcon()}
             Remove all
           </button>
           <button class="button button_secondary toolbar__hide-button" id="minimize-button">
-            ${document.querySelector(".create-form")?.offsetHeight > 0 || groups.length === 0
+            ${document.querySelector(".create-form")?.offsetHeight > 0 || brands.length === 0
       ? 'Hide ' + hideIcon() : 'Show ' + showIcon()}
           </button>
         </div>
-        <form class="groups__create-form create-form" style="height: ${groups.length === 0 ? 'auto' : 0}">
+        <form class="brands__create-form create-form" style="height: ${brands.length === 0 ? 'auto' : 0}">
           <label class="create-form__form-label form-label">
-            <span class="create-form__form-label-text">Add new group</span>
-            <input class="input" type="text" placeholder="Add group title" name="title" ${validation('title')}>
+            <span class="create-form__form-label-text">Add new brand</span>
+            <input class="input" type="text" placeholder="Add brand title" name="title" ${validation('title')}>
           </label>
           <label class="create-form__form-label form-label">
             <span class="create-form__form-label-text">Add description</span>
@@ -45,39 +45,39 @@ export function renderGroups() {
           </button>
         </form>
       </div>
-      <div class="groups__list list">
+      <div class="brands__list list">
         ${
-          groups.length === 0
+      brands.length === 0
           ? /*html*/`<h5 class="no-entries">No entries yet. Add new one using the form above.</h5>`
-          : getTodoGroupsTemplate(groups)}
+          : getBrandsTemplate(brands)}
       </div>
     </div>
   `;
   Maybe.of(page.querySelector('.create-form'))
     .bind(form => form instanceof HTMLFormElement ? form : null)
-    .do(form => form.addEventListener("submit", handleAddTodoGroup))
+    .do(form => form.addEventListener("submit", handleAddBrand))
   Maybe.of(page.querySelector('.list')).do(observeList)
   return page;
 }
 
-export function getTodoGroupsTemplate(groups) {
-  return groups.map(group => {
+export function getBrandsTemplate(brands) {
+  return brands.map(brand => {
     return /*html*/`
-      <div class="list__item card group" data-id="${group.id}">
+      <div class="list__item card brand" data-id="${brand.id}">
         <div class="card__card-header card-header">
-          <a class="card__link link" href="#/todos/${group.id}">
-            <h3 class="card-title card__card-title group__title">
-              ${group.title}
+          <a class="card__link link" href="#/models/${brand.id}">
+            <h3 class="card-title card__card-title brand__title">
+              ${brand.title}
             </h3>
-            <div class="card__description description">${group.description}</div>
+            <div class="card__description description">${brand.description}</div>
           </a>
         </div>
         <div class="card__toolbar toolbar">
-          <button class="button button_primary" onclick="${dispatchShowEditGroupForm({ brandId: group.id })}">
+          <button class="button button_primary" onclick="${dispatchShowEditBrandForm({brandId: brand.id})}">
             ${editIcon()}
             Edit
           </button>
-          <button class="button button_danger" onclick="${dispatchRemoveGroup({ brandId: group.id })}">
+          <button class="button button_danger" onclick="${dispatchRemoveBrand({brandId: brand.id})}">
             ${removeIcon()}
             Remove
           </button>
@@ -89,13 +89,13 @@ export function getTodoGroupsTemplate(groups) {
 
 /**
  * 
- * @param {Brand} group
+ * @param {Brand} brand
  */
-export function renderTodos(group) {
+export function renderModels(brand) {
   const page = fragment/*html*/`
-    <div class="todos" data-group-id="${group.id}">
+    <div class="models" data-brand-id="${brand.id}">
       <div class="header">
-        <h1 class="title header__title">${group.title}</h1>
+        <h1 class="title header__title">${brand.title}</h1>
         <div class="header__toolbar toolbar">
           <button class="button button_primary" onclick="window.location.hash = ''">
             ${homeIcon()}
@@ -110,34 +110,34 @@ export function renderTodos(group) {
             </div>
             <div class="dropdown__content-wrapper">
               <div class="dropdown__content">
-                <button class="button button_primary" onclick="${dispatchShowEditGroupForm({ brandId: group.id })}">
+                <button class="button button_primary" onclick="${dispatchShowEditBrandForm({brandId: brand.id})}">
                   ${editIcon()}
                   Edit
                 </button>
-                <button class="button button_secondary" onclick="${dispatchShowGetFakeTodos({ brandId: group.id })}">
+                <button class="button button_secondary" onclick="${dispatchShowGetFakeModels({brandId: brand.id})}">
                   ${downloadIcon()}
-                  Fake todos
+                  Fake models
                 </button>
-                <button class="button button_danger" onclick="${dispatchRemoveAllTodos({ brandId: group.id })}">
+                <button class="button button_danger" onclick="${dispatchRemoveAllModels({brandId: brand.id})}">
                   ${removeIcon()}
                   Remove all
                 </button>
-                <button class="button button_danger" onclick="${dispatchRemoveGroup({ brandId: group.id })}">
+                <button class="button button_danger" onclick="${dispatchRemoveBrand({brandId: brand.id})}">
                   ${removeIcon()}
-                  Remove group
+                  Remove brand
                 </button>
               </div>
             </div>
           </div>
           <button class="button button_secondary toolbar__hide-button" id="minimize-button">
-            ${document.querySelector(".create-form")?.offsetHeight > 0 || group.models.length === 0
+            ${document.querySelector(".create-form")?.offsetHeight > 0 || brand.models.length === 0
       ? 'Hide ' + hideIcon() : 'Show ' + showIcon()}
           </button>
         </div>
-        <form class="todos__create-form create-form" style="height: ${group.models.length === 0 ? 'auto' : 0}">
+        <form class="models__create-form create-form" style="height: ${brand.models.length === 0 ? 'auto' : 0}">
           <label class="create-form__form-label form-label">
-            <span class="create-form__form-label-text">Add new todo</span>
-            <input class="input" type="text" placeholder="Add todo title" name="title" ${validation('title')}>
+            <span class="create-form__form-label-text">Add new model</span>
+            <input class="input" type="text" placeholder="Add model title" name="title" ${validation('title')}>
           </label>
           <label class="create-form__form-label form-label">
             <span class="create-form__form-label-text">Add description</span>
@@ -146,58 +146,61 @@ export function renderTodos(group) {
           <button class="button button_primary create-form__add-button" type="submit">Add</button>
         </form>
       </div>
-      <div class="todo-filter">
-        <label class="todo-filter__label">
-          <span class="todo-filter__label-text">Filter by status</span>
-          <select class="input" id="todo-filter" name="done" onchange="window.dispatch?.call(null, 'filter-todos', {groupId: ${group.id}, done: this.value})">
+      <div class="model-filter">
+        <label class="model-filter__label">
+          <span class="model-filter__label-text">Filter by status</span>
+          <select class="input" id="model-filter" name="reserved" onchange="window.dispatch?.call(null, 'filter-models', {brandId: ${brand.id}, reserved: this.value})">
             <option value="all" selected>All</option>
-            <option value="true">Done</option>
-            <option value="false">In progress</option>
+            <option value="true">Reserved</option>
+            <option value="false">Available</option>
           </select>
         </label>
       </div>
-      <div class="todos__list list">
-        ${group.models.length === 0
-    ? /*html*/`<h5 class="no-entries">No entries yet. Add new one using the form above.</h5>`
-      : getTodosTemplate(group)
-    }
+      <div class="models__list list">
+        ${brand.models.length === 0
+      ? /*html*/`<h5 class="no-entries">No entries yet. Add new one using the form above.</h5>`
+      : getModelsTemplate(brand)
+  }
       </div>
     </div>
     `
-  page.querySelector('.create-form')?.addEventListener("submit", handleAddTodo);
+  page.querySelector('.create-form')?.addEventListener("submit", handleAddModel);
   Maybe.of(page.querySelector('.list')).do(observeList)
   return page;
 }
 
 /**
  * 
- * @param {Brand} group
+ * @param {Brand} brand
  * @returns 
  */
-export function getTodosTemplate(group) {
-  const { models } = group;
-  return models.map(todo => {
+export function getModelsTemplate(brand) {
+  const { models } = brand;
+  return models.map(model => {
     return /*html*/`
-      <div class="list__item card todo" data-id="${todo.id}">
-        <div class="card__card-header card-header todo-header ${todo.reserved ? 'todo-header_done' : ''}" 
-          onclick="${dispatchToggleTodo({ brandId: group.id, modelId: todo.id })}">
-          <h3 class="card-title card__card-title todo__title ${todo.reserved ? 'todo-title_done' : ''}">
-            ${todo.title}
+      <div class="list__item card model" data-id="${model.id}">
+        <div class="card__card-header card-header model-header ${model.reserved ? 'model-header_reserved' : ''}" 
+          onclick="${dispatchToggleModel({brandId: brand.id, modelId: model.id})}">
+          <h3 class="card-title card__card-title model__title ${model.reserved ? 'model-title_reserved' : ''}">
+            ${model.title}
           </h3>
-          <h5 class="todo__status status">
+          <h5 class="model__status status">
             Status:     
             <span class="status__text">
-              ${todo.reserved ? `${doneIcon()} Done` : `${progressIcon()} In progress`}
+              ${model.reserved ? `${doneIcon()} Reserved` : `${progressIcon()} Available`}
             </span>        
           </h5>
-          <div class="card__description description">${todo.description}</div>
+          <div class="card__description description">${model.description}</div>
         </div>
         <div class="card__toolbar toolbar">
-          <button class="button button_primary" onclick="${dispatchShowEditTodoForm({ brandId: group.id, modelId: todo.id })}">
+          <button class="button button_primary" onclick="${dispatchShowEditModelForm({
+        brandId: brand.id,
+        modelId: model.id
+    })}">
             ${editIcon()}
             Edit
           </button>
-          <button class="button button_danger" onclick="${dispatchRemoveTodo({ brandId: group.id, modelId: todo.id })}">
+          <button class="button button_danger" onclick="${dispatchRemoveModel({brandId: brand.id, modelId: model.id})}">
             ${removeIcon()}
             Remove
           </button>
@@ -209,26 +212,26 @@ export function getTodosTemplate(group) {
 
 /**
  * 
- * @param {Model} todo
+ * @param {Model} model
  * @returns 
  */
-export function renderEditTodoForm(todo) {
+export function renderEditModelForm(model) {
   const page = fragment/*html*/`
-    <h1 class="title container__title">Edit todo</h1>
-    <form class="edit-form todo-edit-form" data-group-id=${todo.brandId} data-todo-id=${todo.id}>
+    <h1 class="title container__title">Edit model</h1>
+    <form class="edit-form model-edit-form" data-brand-id=${model.brandId} data-model-id=${model.id}>
       <label class="edit-form__form-label form-label">
-        <span class="edit-form__form-label-text">Edit todo title</span>
-        <input class="input" type="text" placeholder="Edit todo title" name="title" value="${todo.title}" ${validation('title')}>
+        <span class="edit-form__form-label-text">Edit model title</span>
+        <input class="input" type="text" placeholder="Edit model title" name="title" value="${model.title}" ${validation('title')}>
       </label>
       <label class="edit-form__form-label form-label">
         <span class="edit-form__form-label-text">Edit description</span>
-        <input class="input" type="text" placeholder="Edit description" name="description" value="${todo.description}" ${validation('description')}>
+        <input class="input" type="text" placeholder="Edit description" name="description" value="${model.description}" ${validation('description')}>
       </label>
       <label class="edit-form__form-label form-label">
         <span class="edit-form__form-label-text">Edit status</span>
-        <select class="input" name="done">
-          <option value="true" ${todo.reserved ? 'selected' : ''}>Done</option>
-          <option value="false" ${!todo.reserved ? 'selected' : ''}>In progress</option>
+        <select class="input" name="reserved">
+          <option value="true" ${model.reserved ? 'selected' : ''}>Reserved</option>
+          <option value="false" ${!model.reserved ? 'selected' : ''}>Available</option>
         </select>
       </label>
       <button class="button button_primary" onclick="history.back()">
@@ -241,25 +244,25 @@ export function renderEditTodoForm(todo) {
       </button>
     </form>
   `;
-  page.querySelector('.edit-form')?.addEventListener("submit", handleEditTodo);
+  page.querySelector('.edit-form')?.addEventListener("submit", handleEditModel);
   return page;
 }
 /**
  * 
- * @param {Brand} group
+ * @param {Brand} brand
  * @returns 
  */
-export function renderEditGroupForm(group) {
+export function renderEditBrandForm(brand) {
   const page = fragment/*html*/`
-    <h1 class="title container__title">Edit todo</h1>
-    <form class="edit-form todo-edit-form" data-group-id=${group.id}>
+    <h1 class="title container__title">Edit model</h1>
+    <form class="edit-form model-edit-form" data-brand-id=${brand.id}>
       <label class="edit-form__form-label form-label">
-        <span class="edit-form__form-label-text">Edit todo title</span>
-        <input class="input" type="text" placeholder="Edit todo title" name="title" value="${group.title}" ${validation('title')}>
+        <span class="edit-form__form-label-text">Edit model title</span>
+        <input class="input" type="text" placeholder="Edit model title" name="title" value="${brand.title}" ${validation('title')}>
       </label>
       <label class="edit-form__form-label form-label">
         <span class="edit-form__form-label-text">Edit description</span>
-        <input class="input" type="text" placeholder="Edit description" name="description" value="${group.description}" ${validation('description')}>
+        <input class="input" type="text" placeholder="Edit description" name="description" value="${brand.description}" ${validation('description')}>
       </label>
       <button class="button button_primary" onclick="history.back()">
         ${backIcon()}
@@ -271,7 +274,7 @@ export function renderEditGroupForm(group) {
       </button>
     </form>
   `;
-  page.querySelector('.edit-form')?.addEventListener("submit", handleEditGroup);
+  page.querySelector('.edit-form')?.addEventListener("submit", handleEditBrand);
   return page;
 }
 
@@ -294,15 +297,15 @@ export function renderModal(content) {
  * @param {FakeUser[]} users
  * @param {number} groupId
  */
-export function renderGetTodosForm(users, groupId) {
+export function renderGetModelsForm(users, groupId) {
   return /*html*/`
     <h2 class="title container__title">Select user for import</h2>
-    <form class="edit-form todo-edit-form" data-group-id=${groupId}>
+    <form class="edit-form model-edit-form" data-group-id=${groupId}>
       <label class="edit-form__form-label form-label">
         <span class="edit-form__form-label-text">Select user for import</span>
         <select class="input" name="userId">
           ${users.map(user => {
-    return `<option value="${user.id}" ${user.id === 1 ? 'selected' : ''}>${user.name}</option>`
+      return `<option value="${user.id}" ${user.id === 1 ? 'selected' : ''}>${user.name}</option>`
   })}
         </select>
       </label>

@@ -3,54 +3,54 @@
 import { Maybe } from './helpers.js';
 
 export function getCarBrandById(id) {
-  const todos = getCarBrands();
-  return todos.find(group => group.id === Number(id));
+  const brands = getCarBrands();
+  return brands.find(brand => brand.id === Number(id));
 }
 
 /** @type {ModelGroups | null} */
-let todoGroupsStore = null
+let modelBrandsStore = null
 
 /**
  * 
  * @returns {Brand[]}
  */
 export function getCarBrands() {
-  const baseTodoGroups = [
+  const baseModelBrands = [
     {
       id: 1,
       title: "Kia",
       description: "This is a car brand represented in South Korea.",
-      todos: [
+      models: [
         {
           id: 1,
-          title: "Todo 1 content 1",
-          description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, alias.",
-          done: false,
-          groupId: 1
+          title: "Rio",
+          description: "This is a most salable model of this brand",
+          reserved: false,
+          brandId: 1
         },
         {
           id: 2,
-          title: "Todo 1 content 2",
+          title: "Cerato",
           description: "",
-          done: true,
-          groupId: 1
+          reserved: true,
+          brandId: 1
         },
       ]
     }
   ];
-  if (todoGroupsStore) return todoGroupsStore;
-  const todosFromStorage = localStorage.getItem("todos");
-  if (todosFromStorage) {
+  if (modelBrandsStore) return modelBrandsStore;
+  const modelsFromStorage = localStorage.getItem("models");
+  if (modelsFromStorage) {
     try {
       // @ts-ignore
-      todoGroupsStore = JSON.parse(todosFromStorage);
+      modelBrandsStore = JSON.parse(modelsFromStorage);
       // @ts-ignore
-      return todoGroupsStore;
+      return modelBrandsStore;
     } catch (e) {
-      localStorage.removeItem("todos");
+      localStorage.removeItem("models");
     }
   }
-  return baseTodoGroups;
+  return baseModelBrands;
 }
 
 /**
@@ -58,9 +58,9 @@ export function getCarBrands() {
  * @param {GetBrandParams} params
  * @returns 
  */
-export function getGroup({ id, models = null }) {
+export function getBrand({ id, models = null }) {
   return Maybe.of(models ?? getCarBrands())
-    .bind(todos => todos.find(group => group.id === Number(id)))
+    .bind(models => models.find(brand => brand.id === Number(id)))
     .get();
 }
 
@@ -69,15 +69,15 @@ export function getGroup({ id, models = null }) {
  * @param {GetModelParams} params
  * @returns 
  */
-export function getTodo({ brandId = null, modelId, brand = null }) {
-  if (brandId) return Maybe.of(brand ?? getGroup({ id: brandId }))
-    .bind(group => group.todos.find(todo => todo.id === Number(modelId)))
+export function getModel({ brandId = null, modelId, brand = null }) {
+  if (brandId) return Maybe.of(brand ?? getBrand({ id: brandId }))
+    .bind(brand => brand.models.find(model => model.id === Number(modelId)))
     .get();
   return Maybe.of(getCarBrands())
-    .bind(groups => {
-      for (const group of groups) {
-        for (const todo of group.todos) {
-          if (todo.id === modelId) return todo
+    .bind(brands => {
+      for (const brand of brands) {
+        for (const model of brand.models) {
+          if (model.id === modelId) return model
         }
       }
     })
@@ -90,44 +90,44 @@ export function getTodo({ brandId = null, modelId, brand = null }) {
  * @returns 
  */
 export function getData({ brandId, modelId = null }) {
-  const todos = getCarBrands();
-  const group = getGroup({ id: brandId, models: todos });
-  if (modelId === null) return { todos, group };
-  const todo = getTodo({
+  const modelGroups = getCarBrands();
+  const brand = getBrand({ id: brandId, models: modelGroups });
+  if (modelId === null) return { models: modelGroups, group: brand };
+  const model = getModel({
     brandId: brandId,
     modelId: modelId,
-    brand: group,
+    brand: brand,
   });
-  return { todos, group, todo };
+  return { models: modelGroups, group: brand, todo: model };
 }
 
 /**
  * 
- * @param {ModelGroups?} todoGroups
+ * @param {ModelGroups?} modelGroups
  */
-export function saveTodos(todoGroups = null) {
-  todoGroups ??= getCarBrands();
-  // todoGroups.forEach(group => {
+export function saveModels(modelGroups = null) {
+  modelGroups ??= getCarBrands();
+  // modelGroups.forEach(group => {
   //   if (group.todos.length === 0) window.dispatch(events.groupHasNoTodos, { groupId: group.id });
   // })
-  todoGroupsStore = todoGroups;
-  localStorage.setItem("todos", JSON.stringify(todoGroups));
+  modelBrandsStore = modelGroups;
+  localStorage.setItem("models", JSON.stringify(modelGroups));
 }
 
 /**
  * @param {number} id 
  */
-export async function getFakeTodosForUser(id) {
+export async function getFakeModelsForUser(id) {
   try {
     const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}/todos`);
     /** @type {ServerModel[]} */
-    const todos = await response.json();
-    return todos.map(todo => {
+    const models = await response.json();
+    return models.map(model => {
       return {
-        id: todo.id,
-        title: todo.title,
-        description: todo.completed ? 'Done' : 'In progress',
-        done: todo.completed,
+        id: model.id,
+        title: model.title,
+        description: model.completed ? 'Reserved' : 'Available',
+        reserved: model.completed,
       };
     });
   } catch (err) {

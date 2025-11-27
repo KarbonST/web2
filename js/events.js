@@ -23,16 +23,16 @@ export function on(eventName, callback) {
 }
 
 export const events = {
-  toggleTodo: "toggle-todo",
-  removeTodo: "remove-todo",
-  removeGroup: "remove-group",
-  removeAllGroups: "remove-all-groups",
-  removeAllTodos: "remove-all-todos",
-  showGetFakeTodos: "show-get-fake-todos",
-  showEditTodoForm: "show-edit-todo-form",
-  showEditGroupForm: "show-edit-group-form",
-  groupHasNoTodos: "group-has-no-todos",
-  filterTodos: "filter-todos",
+  toggleModel: "toggle-model",
+  removeModel: "remove-model",
+  removeBrand: "remove-brand",
+  removeAllBrands: "remove-all-brands",
+  removeAllModels: "remove-all-models",
+  showGetFakeModels: "show-get-fake-models",
+  showEditModelForm: "show-edit-model-form",
+  showEditBrandForm: "show-edit-brand-form",
+  brandHasNoModels: "brand-has-no-models",
+  filterModels: "filter-models",
 };
 
 /**
@@ -44,24 +44,24 @@ export function baseDispatch(eventName, details) {
 }
 
 /** @type {(details: ToggleCarParams) => void} */
-export const dispatchToggleTodo = partial(baseDispatch, events.toggleTodo);
+export const dispatchToggleModel = partial(baseDispatch, events.toggleModel);
 
 /** @type {(details: RemoveCarParams) => void} */
-export const dispatchRemoveTodo = partial(baseDispatch, events.removeTodo);
+export const dispatchRemoveModel = partial(baseDispatch, events.removeModel);
 
 /** @type {(details: RemoveBrandParams) => void} */
-export const dispatchRemoveGroup = partial(baseDispatch, events.removeGroup);
+export const dispatchRemoveBrand = partial(baseDispatch, events.removeBrand);
 
-export const dispatchRemoveAllGroups = partial(baseDispatch, events.removeAllGroups);
+export const dispatchRemoveAllBrands = partial(baseDispatch, events.removeAllBrands);
 
 /** @type {(details: RemoveAllModelsParams) => void} */
-export const dispatchRemoveAllTodos = partial(baseDispatch, events.removeAllTodos);
+export const dispatchRemoveAllModels = partial(baseDispatch, events.removeAllModels);
 
 /** @type {(details: ShowGetFakeModelsParams) => void} */
-export const dispatchShowGetFakeTodos = partial(baseDispatch, events.showGetFakeTodos);
+export const dispatchShowGetFakeModels = partial(baseDispatch, events.showGetFakeModels);
 
 /** @type {(details: ShowEditModelFormParams) => void} */
-export const dispatchShowEditTodoForm = partial(baseDispatch, events.showEditTodoForm);
+export const dispatchShowEditModelForm = partial(baseDispatch, events.showEditModelForm);
 
 /** @type {(details: ShowEditBrandFormParams) => void} */
-export const dispatchShowEditGroupForm = partial(baseDispatch, events.showEditGroupForm);
+export const dispatchShowEditBrandForm = partial(baseDispatch, events.showEditBrandForm);

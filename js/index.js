@@ -1,10 +1,10 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
 
-import { getGroup, getTodo, getCarBrandById } from './data.js';
+import { getBrand, getModel, getCarBrandById } from './data.js';
 import { handleClick, initCustomEvents } from './event-handlers.js';
 import { Maybe, fixHeightForm } from './helpers.js';
-import { renderGroups, renderTodos, renderNotFound, renderEditTodoForm, renderEditGroupForm } from './renders.js';
+import { renderBrands, renderModels, renderNotFound, renderEditModelForm, renderEditBrandForm } from './renders.js';
 import {initTheme} from "./theme.js";
 
 const stylesLink = document.createElement("link");
@@ -41,28 +41,28 @@ function router() {
   const hash = window.location.hash;
   switch (true) {
     case hash === "":
-      return renderGroups();
-    case /^#\/todos\/\d+\/edit/.test(hash):
-      return Maybe.of(hash.match(/^#\/todos\/(\d+)\/edit/))
-        .bind(([, groupId]) => getGroup({
-          id: Number(groupId)
+      return renderBrands();
+    case /^#\/models\/\d+\/edit/.test(hash):
+      return Maybe.of(hash.match(/^#\/models\/(\d+)\/edit/))
+        .bind(([, brandId]) => getBrand({
+          id: Number(brandId)
         }))
-        .bind(group => renderEditGroupForm(group))
+        .bind(brand => renderEditBrandForm(brand))
         .catch(() => renderNotFound())
         .get();
-    case /^#\/todos\/\d+\/\d+\/edit/.test(hash):
-      return Maybe.of(hash.match(/^#\/todos\/(\d+)\/(\d+)\/edit/))
-        .bind(([, groupId, todoId]) => getTodo({
-          brandId: Number(groupId),
-          modelId: Number(todoId),
+    case /^#\/models\/\d+\/\d+\/edit/.test(hash):
+      return Maybe.of(hash.match(/^#\/models\/(\d+)\/(\d+)\/edit/))
+        .bind(([, brandId, modelId]) => getModel({
+          brandId: Number(brandId),
+          modelId: Number(modelId),
         }))
-        .bind(todo => renderEditTodoForm(todo))
+        .bind(model => renderEditModelForm(model))
         .catch(() => renderNotFound())
         .get();
-    case hash.startsWith("#/todos/"):
+    case hash.startsWith("#/models/"):
       const id = hash.split("/")[2];
-      const group = getCarBrandById(id);
-      if (group) return renderTodos(group);
+      const brand = getCarBrandById(id);
+      if (brand) return renderModels(brand);
       return renderNotFound();
     default:
       return renderNotFound();

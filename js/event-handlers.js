@@ -1,12 +1,12 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
 
-import { getFakeUsers, getGroup, getTodo, getCarBrands, saveTodos } from './data.js';
+import { getFakeUsers, getBrand, getModel, getCarBrands, saveModels } from './data.js';
 import { events, initDispatchEvent, on } from './events.js';
-import { handleGetFakeTodos } from './form-handlers.js';
+import { handleGetFakeModels } from './form-handlers.js';
 import { Maybe, compose, getFullHeightOfChildren, initModalCloseHandler, removeAnimatedModal } from './helpers.js';
 import { doneIcon, hideIcon, progressIcon, showIcon } from './icons.js';
-import { getTodosTemplate, renderGetTodosForm, renderModal } from './renders.js';
+import { getModelsTemplate, renderGetModelsForm, renderModal } from './renders.js';
 
 export function handleDropdown(event) {
   const dropdown = event.target.closest(".dropdown");
@@ -42,18 +42,18 @@ export const handleClick = compose(
  * 
  * @param {ShowEditBrandFormParams} params
  */
-function handleShowEditGroupForm({ brandId }) {
+function handleShowEditBrandForm({ brandId }) {
   // history.pushState(null, '', `#/todos/edit?groupId=${groupId}&todoId=${todoId}`);
-  window.location.hash = `#/todos/${brandId}/edit`;
+  window.location.hash = `#/cars/${brandId}/edit`;
 }
 
 /**
  * 
  * @param {ShowEditModelFormParams} params
  */
-function handleShowEditTodoForm({ brandId, modelId }) {
+function handleShowEditModelForm({ brandId, modelId }) {
   // history.pushState(null, '', `#/todos/edit?groupId=${groupId}&todoId=${todoId}`);
-  window.location.hash = `#/todos/${brandId}/${modelId}/edit`;
+  window.location.hash = `#/cars/${brandId}/${modelId}/edit`;
 }
 
 /**
@@ -61,24 +61,24 @@ function handleShowEditTodoForm({ brandId, modelId }) {
  * @param {ToggleCarParams} details
  * @returns 
  */
-function handleToggleTodo({ brandId, modelId }) {
-  const todo = getTodo({ brandId: brandId, modelId: modelId });
-  if (!todo) return;
-  todo.done = !todo.done;
-  saveTodos();
-  Maybe.of(document.querySelector(`.todo[data-id="${modelId}"]`))
-    .bind(todoElement => todoElement.querySelector(".todo__title"))
-    .do(subtitle => subtitle.classList.toggle("todo-title_done"))
-    .bind(() => document.querySelector(`.todo[data-id="${modelId}"] .status__text`))
-    .do(status => status.innerHTML = todo.done ? `${doneIcon()} Done` : `${progressIcon()} In progress`)
-    .bind(() => document.querySelector(`#todo-filter`))
+function handleToggleModel({ brandId, modelId }) {
+  const model = getModel({ brandId: brandId, modelId: modelId });
+  if (!model) return;
+  model.reserved = !model.reserved;
+  saveModels();
+  Maybe.of(document.querySelector(`.model[data-id="${modelId}"]`))
+    .bind(modelElement => modelElement.querySelector(".model__title"))
+    .do(subtitle => subtitle.classList.toggle("model-title_reserved"))
+    .bind(() => document.querySelector(`.model[data-id="${modelId}"] .status__text`))
+    .do(status => status.innerHTML = model.reserved ? `${doneIcon()} Reserved` : `${progressIcon()} Available`)
+    .bind(() => document.querySelector(`#model-filter`))
     .bind(filter => filter instanceof HTMLSelectElement ? filter.value : null)
     .do(filter => {
       if (filter === 'all') return;
-      const todoElement = document.querySelector(`.todo[data-id="${modelId}"]`);
-      if (!todoElement) return;
-      if (filter === 'true' && !todo.done) todoElement.remove();
-      else if (filter === 'false' && todo.done) todoElement.remove();
+      const modelElement = document.querySelector(`.model[data-id="${modelId}"]`);
+      if (!modelElement) return;
+      if (filter === 'true' && !model.reserved) modelElement.remove();
+      else if (filter === 'false' && model.reserved) modelElement.remove();
     })
 }
 
@@ -86,56 +86,56 @@ function handleToggleTodo({ brandId, modelId }) {
  * 
  * @param {RemoveCarParams} details
  */
-function handleRemoveTodo({ brandId, modelId }) {
+function handleRemoveModel({ brandId, modelId }) {
   if (!confirm("Are you sure?")) return;
-  Maybe.of(getGroup({ id: brandId }))
-    .do(group => group.todos = group.todos.filter(todo => todo.id !== Number(modelId)))
-    .do(() => saveTodos())
-    .bind(() => document.querySelector(`.todo[data-id="${modelId}"]`))
-    .do(todoElement => todoElement.remove());
+  Maybe.of(getBrand({ id: brandId }))
+    .do(brand => brand.models = brand.models.filter(model => model.id !== Number(modelId)))
+    .do(() => saveModels())
+    .bind(() => document.querySelector(`.model[data-id="${modelId}"]`))
+    .do(modelElement => modelElement.remove());
 }
 
 /**
  * 
  * @param {RemoveBrandParams} details
  */
-function handleRemoveGroup({ brandId }) {
+function handleRemoveBrand({ brandId }) {
   if (!confirm("Are you sure?")) return;
   Maybe.of(getCarBrands())
-    .bind(groups => groups.filter(group => group.id !== Number(brandId)))
-    .do(groups => saveTodos(groups))
-    .bind(() => document.querySelector(`.group[data-id="${brandId}"]`))
-    .do(groupElement => groupElement.remove())
+    .bind(brands => brands.filter(brand => brand.id !== Number(brandId)))
+    .do(brands => saveModels(brands))
+    .bind(() => document.querySelector(`.brand[data-id="${brandId}"]`))
+    .do(brandElement => brandElement.remove())
     .catch(() => window.location.hash = "");
 }
 
-function handleRemoveAllGroups() {
+function handleRemoveAllBrands() {
   if (!confirm("Are you sure?")) return;
-  saveTodos([]);
-  Maybe.of(document.querySelector(".groups__list"))
-    .do(groupList => groupList.innerHTML = "");
+  saveModels([]);
+  Maybe.of(document.querySelector(".brands__list"))
+    .do(brandList => brandList.innerHTML = "");
 }
 
 /**
  * 
  * @param {RemoveAllModelsParams} details
  */
-function handleRemoveAllTodos({ brandId }) {
+function handleRemoveAllModels({ brandId }) {
   if (!confirm("Are you sure?")) return;
-  Maybe.of(getGroup({ id: brandId }))
-    .do(group => group.todos = [])
-    .do(() => saveTodos())
-    .bind(() => document.querySelector(".todos__list"))
-    .do(todoList => todoList.innerHTML = "");
+  Maybe.of(getBrand({ id: brandId }))
+    .do(brand => brand.models = [])
+    .do(() => saveModels())
+    .bind(() => document.querySelector(".models__list"))
+    .do(modelList => modelList.innerHTML = "");
 }
 
 /**
  * 
  * @param {ShowGetFakeModelsParams} details
  */
-async function handleShowGetFakeTodos({ brandId }) {
+async function handleShowGetFakeModels({ brandId }) {
   Maybe.of(await getFakeUsers())
-    .bind(users => renderModal(renderGetTodosForm(users, brandId)))
+    .bind(users => renderModal(renderGetModelsForm(users, brandId)))
     .bind(modal => modal.querySelector(".modal"))
     .do(modal => {
       modal.classList.add("modal_enter");
@@ -144,7 +144,7 @@ async function handleShowGetFakeTodos({ brandId }) {
       const form = modal.querySelector("form");
       if (!form) return null;
       form.addEventListener("submit", (e) =>
-        handleGetFakeTodos(e, () => removeAnimatedModal(modal)))
+        handleGetFakeModels(e, () => removeAnimatedModal(modal)))
     })
     .catch(() => alert("Something went wrong. Try again later."))
 }
@@ -161,29 +161,29 @@ function handleNoItems() {
 /**
  * @param {FilterModelsParams} details
  */
-function handleFilterTodos({ brandId, reserved }) {
-  const group = getGroup({ id: brandId });
-  if (!group) return;
-  const todoList = document.querySelector(".todos__list");
-  if (!todoList) return;
-  todoList.innerHTML = getTodosTemplate({
-    ...group,
-    models: group.todos.filter(todo => reserved === 'all' || String(todo.done) === reserved),
+function handleFilterModels({ brandId, reserved }) {
+  const brand = getBrand({ id: brandId });
+  if (!brand) return;
+  const modelList = document.querySelector(".models__list");
+  if (!modelList) return;
+  modelList.innerHTML = getModelsTemplate({
+    ...brand,
+    models: brand.models.filter(model => reserved === 'all' || String(model.reserved) === reserved),
   });
 }
 
 
 export function initCustomEvents() {
   initDispatchEvent();
-  on(events.toggleTodo, handleToggleTodo);
-  on(events.removeTodo, handleRemoveTodo);
-  on(events.removeGroup, handleRemoveGroup);
-  on(events.removeAllGroups, handleRemoveAllGroups);
-  on(events.removeAllTodos, handleRemoveAllTodos);
-  on(events.showGetFakeTodos, handleShowGetFakeTodos);
-  on(events.showEditGroupForm, handleShowEditGroupForm);
-  on(events.showEditTodoForm, handleShowEditTodoForm);
-  on(events.filterTodos, handleFilterTodos);
+  on(events.toggleModel, handleToggleModel);
+  on(events.removeModel, handleRemoveModel);
+  on(events.removeBrand, handleRemoveBrand);
+  on(events.removeAllBrands, handleRemoveAllBrands);
+  on(events.removeAllModels, handleRemoveAllModels);
+  on(events.showGetFakeModels, handleShowGetFakeModels);
+  on(events.showEditBrandForm, handleShowEditBrandForm);
+  on(events.showEditModelForm, handleShowEditModelForm);
+  on(events.filterModels, handleFilterModels);
 }
 
 /**

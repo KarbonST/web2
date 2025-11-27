@@ -1,110 +1,110 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
 
-import { getData, getFakeTodosForUser, getGroup, getTodo, getCarBrands, saveTodos } from './data.js';
+import { getData, getFakeModelsForUser, getBrand, getModel, getCarBrands, saveModels } from './data.js';
 import { Maybe, sanitize } from './helpers.js';
-import { getTodoGroupsTemplate, getTodosTemplate } from './renders.js';
+import { getBrandsTemplate, getModelsTemplate } from './renders.js';
 
 /**
  * @param {Event} event 
  */
-export function handleAddTodoGroup(event) {
+export function handleAddBrand(event) {
   const { values: { title, description } } = handleForm(event)
   if (title && description) {
-    const todos = getCarBrands();
-    const newGroup = {
-      id: todos.length + 1,
+    const brands = getCarBrands();
+    const newBrand = {
+      id: brands.length + 1,
       title,
       description,
-      todos: [],
+      models: [],
     };
-    todos.push(newGroup);
-    saveTodos(todos);
-    const groupsList = document.querySelector(".groups__list");
-    if (!groupsList) return;
-    groupsList.insertAdjacentHTML("beforeend", getTodoGroupsTemplate([newGroup]));
+    brands.push(newBrand);
+    saveModels(brands);
+    const brandsList = document.querySelector(".brands__list");
+    if (!brandsList) return;
+    brandsList.insertAdjacentHTML("beforeend", getBrandsTemplate([newBrand]));
   }
 }
 
 /**
  * @param {Event} event 
  */
-export function handleAddTodo(event) {
+export function handleAddModel(event) {
   const { values: { title, description }, form } = handleForm(event)
   if (title && description) {
-    const groupId = form.closest(".todos")?.dataset?.groupId;
-    const { todos, group } = getData({ brandId: groupId });
-    if (!group) return;
-    const newTodo = {
-      id: group.todos.length + 1,
+    const brandId = form.closest(".models")?.dataset?.brandId;
+    const { models, brand } = getData({ brandId: brandId });
+    if (!brand) return;
+    const newModel = {
+      id: brand.models.length + 1,
       title,
       description,
-      done: false,
-      groupId
+      reserved: false,
+      brandId: brandId
     };
-    group.todos.push(newTodo);
-    saveTodos(todos);
-    // check todo-filter
-    const todoFilter = document.querySelector("#todo-filter");
-    if (todoFilter instanceof HTMLSelectElement && todoFilter.value === "true") return;
-    const todoList = document.querySelector(".todos__list");
-    if (!todoList) return;
-    todoList.insertAdjacentHTML("beforeend", getTodosTemplate({ ...group, models: [newTodo] }));
+    brand.models.push(newModel);
+    saveModels(models);
+    // check model-filter
+    const modelFilter = document.querySelector("#model-filter");
+    if (modelFilter instanceof HTMLSelectElement && modelFilter.value === "true") return;
+    const modelList = document.querySelector(".models__list");
+    if (!modelList) return;
+    modelList.insertAdjacentHTML("beforeend", getModelsTemplate({ ...brand, models: [newModel] }));
   }
 }
 
 /**
  * @param {Event} event 
  */
-export function handleEditTodo(event) {
-  const { values: { title, description, done }, form } = handleForm(event)
-  const groupId = Number(form.dataset.groupId)
-  const todoId = Number(form.dataset.todoId)
-  const todo = getTodo({ brandId: groupId, modelId: todoId });
-  if (!todo) return;
-  todo.title = title;
-  todo.description = description;
-  todo.done = done === 'true'
-  saveTodos();
-  window.location.hash = `#/todos/${groupId}`
+export function handleEditModel(event) {
+  const { values: { title, description, reserved }, form } = handleForm(event)
+  const brandId = Number(form.dataset.brandId)
+  const modelId = Number(form.dataset.modelId)
+  const model = getModel({ brandId: brandId, modelId: modelId });
+  if (!model) return;
+  model.title = title;
+  model.description = description;
+  model.reserved = reserved === 'true'
+  saveModels();
+  window.location.hash = `#/models/${brandId}`
 }
 
 /**
  * @param {Event} event 
  */
-export function handleEditGroup(event) {
+export function handleEditBrand(event) {
   const { values: { title, description }, form } = handleForm(event)
-  const groupId = Number(form.dataset.groupId)
-  const group = getCarBrands().find(group => group.id === groupId);
-  if (!group) return;
-  group.title = title;
-  group.description = description;
-  saveTodos();
-  window.location.hash = `#/todos/${groupId}`
+  const brandId = Number(form.dataset.brandId)
+  const brand = getCarBrands().find(brand => brand.id === brandId);
+  if (!brand) return;
+  brand.title = title;
+  brand.description = description;
+  saveModels();
+  window.location.hash = `#/models/${brandId}`
 }
 
 /**
  * @param {Event} event 
  * @param {Function?} callback
  */
-export async function handleGetFakeTodos(event, callback) {
+export async function handleGetFakeModels(event, callback) {
   const { values: { userId }, form } = handleForm(event)
-  const groupId = Number(form.dataset.groupId)
-  Maybe.of(await getFakeTodosForUser(Number(userId)))
-    .bind(todos => todos.map(todo => ({ ...todo, groupId })))
-    .do(todos => {
-      const group = getGroup({ id: groupId });
-      if (!group) return null;
-      group.todos = group.todos.concat(todos);
-      saveTodos();
+  const brandId = Number(form.dataset.brandId)
+  Maybe.of(await getFakeModelsForUser(Number(userId)))
+    .bind(models => models.map(model => ({ ...model, brandId: brandId })))
+    .do(models => {
+      const brand = getBrand({ id: brandId });
+      if (!brand) return null;
+      brand.models = brand.models.concat(models);
+      saveModels();
       if (callback) callback();
-      Maybe.of(document.querySelector("#todo-filter"))
+      Maybe.of(document.querySelector("#model-filter"))
         .bind(filter => filter instanceof HTMLSelectElement ? filter.value : null)
-        .bind(filter => todos.filter(todo => filter === 'all' || String(todo.done) === filter))
-        .do(todos => {
-          const todoList = document.querySelector(".todos__list");
-          if (!todoList) return null;
-          todoList.insertAdjacentHTML("beforeend", getTodosTemplate({ ...group, models: todos }));
+        .bind(filter => models.filter(model => filter === 'all' || String(model.reserved) === filter))
+        .do(models => {
+          const modelsList = document.querySelector(".models__list");
+          if (!modelsList) return null;
+          modelsList.insertAdjacentHTML("beforeend", getModelsTemplate({ ...brand, models: models }));
         })
     })
 }
