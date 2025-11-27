@@ -16,72 +16,72 @@ type EditCarParams = BaseCarParams & {
   description: string;
 };
 
-type ShowEditCarFormParams = BaseCarParams;
+type ShowEditModelFormParams = BaseCarParams;
 
-type ShowEditGroupFormParams = {
-  groupId: number;
+type ShowEditBrandFormParams = {
+  brandId: number;
 };
 
-type RemoveAllTodosParams = {
-  groupId: number;
+type RemoveAllModelsParams = {
+  brandId: number;
 };
 
-type RemoveGroupParams = {
-  groupId: number;
+type RemoveBrandParams = {
+  brandId: number;
 };
 
-type ShowGetFakeTodosParams = {
-  groupId: number;
+type ShowGetFakeModelsParams = {
+  brandId: number;
 };
 
-type GroupHasNoTodosParams = {
-  groupId: number;
+type BrandHasNoModelParams = {
+  brandId: number;
 };
 
 type GetDataParams = {
-  groupId: number;
-  todoId?: number | null;
+  brandId: number;
+  modelId?: number | null;
 };
 
-type ServerTodo = {
+type ServerModel = {
   userId: number;
   id: number;
   title: string;
   completed: boolean;
 }
 
-type GetGroupParams = {
+type GetBrandParams = {
   id: number;
-  todos?: TodoGroups | null;
+  models?: ModelGroups | null;
 }
 
-type GetTodoParams = {
-  groupId?: number | null;
-  todoId: number;
-  group?: Group | null;
+type GetModelParams = {
+  brandId?: number | null;
+  modelId: number;
+  brand?: Brand | null;
 };
 
-type FilterTodosParams = {
-  groupId: number;
-  done: string;
+type FilterModelsParams = {
+  brandId: number;
+  reserved: string;
 };
 
-type Todo = {
+type Model = {
   id: number;
-  groupId: number;
+  brandId: number;
   title: string;
   description: string;
-  done: boolean;
+  reserved: boolean;
 };
 
-type Group = {
+type Brand = {
   id: number;
   title: string;
   description: string;
-  todos: Todo[];
+  models: Model[];
 }
 
-type TodoGroups = Group[];
+type ModelGroups = Brand[];
 
 type FakeUser = {
   id: number;

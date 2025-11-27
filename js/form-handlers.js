@@ -33,7 +33,7 @@ export function handleAddTodo(event) {
   const { values: { title, description }, form } = handleForm(event)
   if (title && description) {
     const groupId = form.closest(".todos")?.dataset?.groupId;
-    const { todos, group } = getData({ groupId });
+    const { todos, group } = getData({ brandId: groupId });
     if (!group) return;
     const newTodo = {
       id: group.todos.length + 1,
@@ -49,7 +49,7 @@ export function handleAddTodo(event) {
     if (todoFilter instanceof HTMLSelectElement && todoFilter.value === "true") return;
     const todoList = document.querySelector(".todos__list");
     if (!todoList) return;
-    todoList.insertAdjacentHTML("beforeend", getTodosTemplate({ ...group, todos: [newTodo] }));
+    todoList.insertAdjacentHTML("beforeend", getTodosTemplate({ ...group, models: [newTodo] }));
   }
 }
 
@@ -60,7 +60,7 @@ export function handleEditTodo(event) {
   const { values: { title, description, done }, form } = handleForm(event)
   const groupId = Number(form.dataset.groupId)
   const todoId = Number(form.dataset.todoId)
-  const todo = getTodo({ groupId, todoId });
+  const todo = getTodo({ brandId: groupId, modelId: todoId });
   if (!todo) return;
   todo.title = title;
   todo.description = description;
@@ -104,7 +104,7 @@ export async function handleGetFakeTodos(event, callback) {
         .do(todos => {
           const todoList = document.querySelector(".todos__list");
           if (!todoList) return null;
-          todoList.insertAdjacentHTML("beforeend", getTodosTemplate({ ...group, todos }));
+          todoList.insertAdjacentHTML("beforeend", getTodosTemplate({ ...group, models: todos }));
         })
     })
 }

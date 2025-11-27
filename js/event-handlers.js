@@ -40,16 +40,16 @@ export const handleClick = compose(
 
 /**
  * 
- * @param {ShowEditGroupFormParams} params
+ * @param {ShowEditBrandFormParams} params
  */
-function handleShowEditGroupForm({ groupId }) {
+function handleShowEditGroupForm({ brandId }) {
   // history.pushState(null, '', `#/todos/edit?groupId=${groupId}&todoId=${todoId}`);
-  window.location.hash = `#/todos/${groupId}/edit`;
+  window.location.hash = `#/todos/${brandId}/edit`;
 }
 
 /**
  * 
- * @param {ShowEditCarFormParams} params
+ * @param {ShowEditModelFormParams} params
  */
 function handleShowEditTodoForm({ brandId, modelId }) {
   // history.pushState(null, '', `#/todos/edit?groupId=${groupId}&todoId=${todoId}`);
@@ -62,7 +62,7 @@ function handleShowEditTodoForm({ brandId, modelId }) {
  * @returns 
  */
 function handleToggleTodo({ brandId, modelId }) {
-  const todo = getTodo({ groupId: brandId, todoId: modelId });
+  const todo = getTodo({ brandId: brandId, modelId: modelId });
   if (!todo) return;
   todo.done = !todo.done;
   saveTodos();
@@ -97,14 +97,14 @@ function handleRemoveTodo({ brandId, modelId }) {
 
 /**
  * 
- * @param {RemoveGroupParams} details 
+ * @param {RemoveBrandParams} details
  */
-function handleRemoveGroup({ groupId }) {
+function handleRemoveGroup({ brandId }) {
   if (!confirm("Are you sure?")) return;
   Maybe.of(getCarBrands())
-    .bind(groups => groups.filter(group => group.id !== Number(groupId)))
+    .bind(groups => groups.filter(group => group.id !== Number(brandId)))
     .do(groups => saveTodos(groups))
-    .bind(() => document.querySelector(`.group[data-id="${groupId}"]`))
+    .bind(() => document.querySelector(`.group[data-id="${brandId}"]`))
     .do(groupElement => groupElement.remove())
     .catch(() => window.location.hash = "");
 }
@@ -118,11 +118,11 @@ function handleRemoveAllGroups() {
 
 /**
  * 
- * @param {RemoveAllTodosParams} details 
+ * @param {RemoveAllModelsParams} details
  */
-function handleRemoveAllTodos({ groupId }) {
+function handleRemoveAllTodos({ brandId }) {
   if (!confirm("Are you sure?")) return;
-  Maybe.of(getGroup({ id: groupId }))
+  Maybe.of(getGroup({ id: brandId }))
     .do(group => group.todos = [])
     .do(() => saveTodos())
     .bind(() => document.querySelector(".todos__list"))
@@ -131,11 +131,11 @@ function handleRemoveAllTodos({ groupId }) {
 
 /**
  * 
- * @param {ShowGetFakeTodosParams} details 
+ * @param {ShowGetFakeModelsParams} details
  */
-async function handleShowGetFakeTodos({ groupId }) {
+async function handleShowGetFakeTodos({ brandId }) {
   Maybe.of(await getFakeUsers())
-    .bind(users => renderModal(renderGetTodosForm(users, groupId)))
+    .bind(users => renderModal(renderGetTodosForm(users, brandId)))
     .bind(modal => modal.querySelector(".modal"))
     .do(modal => {
       modal.classList.add("modal_enter");
@@ -159,16 +159,16 @@ function handleNoItems() {
 }
 
 /**
- * @param {FilterTodosParams} details
+ * @param {FilterModelsParams} details
  */
-function handleFilterTodos({ groupId, done }) {
-  const group = getGroup({ id: groupId });
+function handleFilterTodos({ brandId, reserved }) {
+  const group = getGroup({ id: brandId });
   if (!group) return;
   const todoList = document.querySelector(".todos__list");
   if (!todoList) return;
   todoList.innerHTML = getTodosTemplate({
     ...group,
-    todos: group.todos.filter(todo => done === 'all' || String(todo.done) === done),
+    models: group.todos.filter(todo => reserved === 'all' || String(todo.done) === reserved),
   });
 }
 

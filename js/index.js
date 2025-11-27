@@ -53,8 +53,8 @@ function router() {
     case /^#\/todos\/\d+\/\d+\/edit/.test(hash):
       return Maybe.of(hash.match(/^#\/todos\/(\d+)\/(\d+)\/edit/))
         .bind(([, groupId, todoId]) => getTodo({
-          groupId: Number(groupId),
-          todoId: Number(todoId),
+          brandId: Number(groupId),
+          modelId: Number(todoId),
         }))
         .bind(todo => renderEditTodoForm(todo))
         .catch(() => renderNotFound())

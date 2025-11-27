@@ -73,11 +73,11 @@ export function getTodoGroupsTemplate(groups) {
           </a>
         </div>
         <div class="card__toolbar toolbar">
-          <button class="button button_primary" onclick="${dispatchShowEditGroupForm({ groupId: group.id })}">
+          <button class="button button_primary" onclick="${dispatchShowEditGroupForm({ brandId: group.id })}">
             ${editIcon()}
             Edit
           </button>
-          <button class="button button_danger" onclick="${dispatchRemoveGroup({ groupId: group.id })}">
+          <button class="button button_danger" onclick="${dispatchRemoveGroup({ brandId: group.id })}">
             ${removeIcon()}
             Remove
           </button>
@@ -89,7 +89,7 @@ export function getTodoGroupsTemplate(groups) {
 
 /**
  * 
- * @param {Group} group
+ * @param {Brand} group
  */
 export function renderTodos(group) {
   const page = fragment/*html*/`
@@ -110,19 +110,19 @@ export function renderTodos(group) {
             </div>
             <div class="dropdown__content-wrapper">
               <div class="dropdown__content">
-                <button class="button button_primary" onclick="${dispatchShowEditGroupForm({ groupId: group.id })}">
+                <button class="button button_primary" onclick="${dispatchShowEditGroupForm({ brandId: group.id })}">
                   ${editIcon()}
                   Edit
                 </button>
-                <button class="button button_secondary" onclick="${dispatchShowGetFakeTodos({ groupId: group.id })}">
+                <button class="button button_secondary" onclick="${dispatchShowGetFakeTodos({ brandId: group.id })}">
                   ${downloadIcon()}
                   Fake todos
                 </button>
-                <button class="button button_danger" onclick="${dispatchRemoveAllTodos({ groupId: group.id })}">
+                <button class="button button_danger" onclick="${dispatchRemoveAllTodos({ brandId: group.id })}">
                   ${removeIcon()}
                   Remove all
                 </button>
-                <button class="button button_danger" onclick="${dispatchRemoveGroup({ groupId: group.id })}">
+                <button class="button button_danger" onclick="${dispatchRemoveGroup({ brandId: group.id })}">
                   ${removeIcon()}
                   Remove group
                 </button>
@@ -130,11 +130,11 @@ export function renderTodos(group) {
             </div>
           </div>
           <button class="button button_secondary toolbar__hide-button" id="minimize-button">
-            ${document.querySelector(".create-form")?.offsetHeight > 0 || group.todos.length === 0
+            ${document.querySelector(".create-form")?.offsetHeight > 0 || group.models.length === 0
       ? 'Hide ' + hideIcon() : 'Show ' + showIcon()}
           </button>
         </div>
-        <form class="todos__create-form create-form" style="height: ${group.todos.length === 0 ? 'auto' : 0}">
+        <form class="todos__create-form create-form" style="height: ${group.models.length === 0 ? 'auto' : 0}">
           <label class="create-form__form-label form-label">
             <span class="create-form__form-label-text">Add new todo</span>
             <input class="input" type="text" placeholder="Add todo title" name="title" ${validation('title')}>
@@ -157,7 +157,7 @@ export function renderTodos(group) {
         </label>
       </div>
       <div class="todos__list list">
-        ${group.todos.length === 0
+        ${group.models.length === 0
     ? /*html*/`<h5 class="no-entries">No entries yet. Add new one using the form above.</h5>`
       : getTodosTemplate(group)
     }
@@ -171,23 +171,23 @@ export function renderTodos(group) {
 
 /**
  * 
- * @param {Group} group 
+ * @param {Brand} group
  * @returns 
  */
 export function getTodosTemplate(group) {
-  const { todos } = group;
-  return todos.map(todo => {
+  const { models } = group;
+  return models.map(todo => {
     return /*html*/`
       <div class="list__item card todo" data-id="${todo.id}">
-        <div class="card__card-header card-header todo-header ${todo.done ? 'todo-header_done' : ''}" 
+        <div class="card__card-header card-header todo-header ${todo.reserved ? 'todo-header_done' : ''}" 
           onclick="${dispatchToggleTodo({ brandId: group.id, modelId: todo.id })}">
-          <h3 class="card-title card__card-title todo__title ${todo.done ? 'todo-title_done' : ''}">
+          <h3 class="card-title card__card-title todo__title ${todo.reserved ? 'todo-title_done' : ''}">
             ${todo.title}
           </h3>
           <h5 class="todo__status status">
             Status:     
             <span class="status__text">
-              ${todo.done ? `${doneIcon()} Done` : `${progressIcon()} In progress`}
+              ${todo.reserved ? `${doneIcon()} Done` : `${progressIcon()} In progress`}
             </span>        
           </h5>
           <div class="card__description description">${todo.description}</div>
@@ -209,13 +209,13 @@ export function getTodosTemplate(group) {
 
 /**
  * 
- * @param {Todo} todo 
+ * @param {Model} todo
  * @returns 
  */
 export function renderEditTodoForm(todo) {
   const page = fragment/*html*/`
     <h1 class="title container__title">Edit todo</h1>
-    <form class="edit-form todo-edit-form" data-group-id=${todo.groupId} data-todo-id=${todo.id}>
+    <form class="edit-form todo-edit-form" data-group-id=${todo.brandId} data-todo-id=${todo.id}>
       <label class="edit-form__form-label form-label">
         <span class="edit-form__form-label-text">Edit todo title</span>
         <input class="input" type="text" placeholder="Edit todo title" name="title" value="${todo.title}" ${validation('title')}>
@@ -227,8 +227,8 @@ export function renderEditTodoForm(todo) {
       <label class="edit-form__form-label form-label">
         <span class="edit-form__form-label-text">Edit status</span>
         <select class="input" name="done">
-          <option value="true" ${todo.done ? 'selected' : ''}>Done</option>
-          <option value="false" ${!todo.done ? 'selected' : ''}>In progress</option>
+          <option value="true" ${todo.reserved ? 'selected' : ''}>Done</option>
+          <option value="false" ${!todo.reserved ? 'selected' : ''}>In progress</option>
         </select>
       </label>
       <button class="button button_primary" onclick="history.back()">
@@ -246,7 +246,7 @@ export function renderEditTodoForm(todo) {
 }
 /**
  * 
- * @param {Group} group 
+ * @param {Brand} group
  * @returns 
  */
 export function renderEditGroupForm(group) {

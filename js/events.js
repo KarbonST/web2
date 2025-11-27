@@ -49,19 +49,19 @@ export const dispatchToggleTodo = partial(baseDispatch, events.toggleTodo);
 /** @type {(details: RemoveCarParams) => void} */
 export const dispatchRemoveTodo = partial(baseDispatch, events.removeTodo);
 
-/** @type {(details: RemoveGroupParams) => void} */
+/** @type {(details: RemoveBrandParams) => void} */
 export const dispatchRemoveGroup = partial(baseDispatch, events.removeGroup);
 
 export const dispatchRemoveAllGroups = partial(baseDispatch, events.removeAllGroups);
 
-/** @type {(details: RemoveAllTodosParams) => void} */
+/** @type {(details: RemoveAllModelsParams) => void} */
 export const dispatchRemoveAllTodos = partial(baseDispatch, events.removeAllTodos);
 
-/** @type {(details: ShowGetFakeTodosParams) => void} */
+/** @type {(details: ShowGetFakeModelsParams) => void} */
 export const dispatchShowGetFakeTodos = partial(baseDispatch, events.showGetFakeTodos);
 
-/** @type {(details: ShowEditCarFormParams) => void} */
+/** @type {(details: ShowEditModelFormParams) => void} */
 export const dispatchShowEditTodoForm = partial(baseDispatch, events.showEditTodoForm);
 
-/** @type {(details: ShowEditGroupFormParams) => void} */
+/** @type {(details: ShowEditBrandFormParams) => void} */
 export const dispatchShowEditGroupForm = partial(baseDispatch, events.showEditGroupForm);
