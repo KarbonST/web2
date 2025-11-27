@@ -1,7 +1,7 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
 
-import { getData, getFakeTodosForUser, getGroup, getTodo, getTodoGroups, saveTodos } from './data.js';
+import { getData, getFakeTodosForUser, getGroup, getTodo, getCarBrands, saveTodos } from './data.js';
 import { Maybe, sanitize } from './helpers.js';
 import { getTodoGroupsTemplate, getTodosTemplate } from './renders.js';
 
@@ -11,7 +11,7 @@ import { getTodoGroupsTemplate, getTodosTemplate } from './renders.js';
 export function handleAddTodoGroup(event) {
   const { values: { title, description } } = handleForm(event)
   if (title && description) {
-    const todos = getTodoGroups();
+    const todos = getCarBrands();
     const newGroup = {
       id: todos.length + 1,
       title,
@@ -75,7 +75,7 @@ export function handleEditTodo(event) {
 export function handleEditGroup(event) {
   const { values: { title, description }, form } = handleForm(event)
   const groupId = Number(form.dataset.groupId)
-  const group = getTodoGroups().find(group => group.id === groupId);
+  const group = getCarBrands().find(group => group.id === groupId);
   if (!group) return;
   group.title = title;
   group.description = description;

@@ -43,10 +43,10 @@ export function baseDispatch(eventName, details) {
   return `window.dispatch?.call(null, '${eventName}', ${toJson(details)})`
 }
 
-/** @type {(details: ToggleTodoParams) => void} */
+/** @type {(details: ToggleCarParams) => void} */
 export const dispatchToggleTodo = partial(baseDispatch, events.toggleTodo);
 
-/** @type {(details: RemoveTodoParams) => void} */
+/** @type {(details: RemoveCarParams) => void} */
 export const dispatchRemoveTodo = partial(baseDispatch, events.removeTodo);
 
 /** @type {(details: RemoveGroupParams) => void} */
@@ -60,7 +60,7 @@ export const dispatchRemoveAllTodos = partial(baseDispatch, events.removeAllTodo
 /** @type {(details: ShowGetFakeTodosParams) => void} */
 export const dispatchShowGetFakeTodos = partial(baseDispatch, events.showGetFakeTodos);
 
-/** @type {(details: ShowEditTodoFormParams) => void} */
+/** @type {(details: ShowEditCarFormParams) => void} */
 export const dispatchShowEditTodoForm = partial(baseDispatch, events.showEditTodoForm);
 
 /** @type {(details: ShowEditGroupFormParams) => void} */

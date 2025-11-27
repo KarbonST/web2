@@ -2,8 +2,8 @@
 
 import { Maybe } from './helpers.js';
 
-export function getTodoGroupById(id) {
-  const todos = getTodoGroups();
+export function getCarBrandById(id) {
+  const todos = getCarBrands();
   return todos.find(group => group.id === Number(id));
 }
 
@@ -14,12 +14,12 @@ let todoGroupsStore = null
  * 
  * @returns {Group[]}
  */
-export function getTodoGroups() {
+export function getCarBrands() {
   const baseTodoGroups = [
     {
       id: 1,
-      title: "Todolist 1",
-      description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, alias.",
+      title: "Kia",
+      description: "This is a car brand represented in South Korea.",
       todos: [
         {
           id: 1,
@@ -59,7 +59,7 @@ export function getTodoGroups() {
  * @returns 
  */
 export function getGroup({ id, todos = null }) {
-  return Maybe.of(todos ?? getTodoGroups())
+  return Maybe.of(todos ?? getCarBrands())
     .bind(todos => todos.find(group => group.id === Number(id)))
     .get();
 }
@@ -73,7 +73,7 @@ export function getTodo({ groupId = null, todoId, group = null }) {
   if (groupId) return Maybe.of(group ?? getGroup({ id: groupId }))
     .bind(group => group.todos.find(todo => todo.id === Number(todoId)))
     .get();
-  return Maybe.of(getTodoGroups())
+  return Maybe.of(getCarBrands())
     .bind(groups => {
       for (const group of groups) {
         for (const todo of group.todos) {
@@ -90,7 +90,7 @@ export function getTodo({ groupId = null, todoId, group = null }) {
  * @returns 
  */
 export function getData({ groupId, todoId = null }) {
-  const todos = getTodoGroups();
+  const todos = getCarBrands();
   const group = getGroup({ id: groupId, todos });
   if (todoId === null) return { todos, group };
   const todo = getTodo({
@@ -106,7 +106,7 @@ export function getData({ groupId, todoId = null }) {
  * @param {TodoGroups?} todoGroups 
  */
 export function saveTodos(todoGroups = null) {
-  todoGroups ??= getTodoGroups();
+  todoGroups ??= getCarBrands();
   // todoGroups.forEach(group => {
   //   if (group.todos.length === 0) window.dispatch(events.groupHasNoTodos, { groupId: group.id });
   // })

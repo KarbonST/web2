@@ -2,21 +2,21 @@ interface Window {
   dispatch: (eventName: string, detail?: Record<string, any>) => void
 }
 
-type BaseTodoParams = {
-  groupId: number;
-  todoId: number;
+type BaseCarParams = {
+  brandId: number;
+  modelId: number;
 };
 
-type ToggleTodoParams = BaseTodoParams
+type ToggleCarParams = BaseCarParams
 
-type RemoveTodoParams = BaseTodoParams
+type RemoveCarParams = BaseCarParams
 
-type EditTodoParams = BaseTodoParams & {
+type EditCarParams = BaseCarParams & {
   title: string;
   description: string;
 };
 
-type ShowEditTodoFormParams = BaseTodoParams;
+type ShowEditCarFormParams = BaseCarParams;
 
 type ShowEditGroupFormParams = {
   groupId: number;

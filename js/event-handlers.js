@@ -1,7 +1,7 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
 
-import { getFakeUsers, getGroup, getTodo, getTodoGroups, saveTodos } from './data.js';
+import { getFakeUsers, getGroup, getTodo, getCarBrands, saveTodos } from './data.js';
 import { events, initDispatchEvent, on } from './events.js';
 import { handleGetFakeTodos } from './form-handlers.js';
 import { Maybe, compose, getFullHeightOfChildren, initModalCloseHandler, removeAnimatedModal } from './helpers.js';
@@ -49,33 +49,33 @@ function handleShowEditGroupForm({ groupId }) {
 
 /**
  * 
- * @param {ShowEditTodoFormParams} params
+ * @param {ShowEditCarFormParams} params
  */
-function handleShowEditTodoForm({ groupId, todoId }) {
+function handleShowEditTodoForm({ brandId, modelId }) {
   // history.pushState(null, '', `#/todos/edit?groupId=${groupId}&todoId=${todoId}`);
-  window.location.hash = `#/todos/${groupId}/${todoId}/edit`;
+  window.location.hash = `#/todos/${brandId}/${modelId}/edit`;
 }
 
 /**
  * 
- * @param {ToggleTodoParams} details 
+ * @param {ToggleCarParams} details
  * @returns 
  */
-function handleToggleTodo({ groupId, todoId }) {
-  const todo = getTodo({ groupId, todoId });
+function handleToggleTodo({ brandId, modelId }) {
+  const todo = getTodo({ groupId: brandId, todoId: modelId });
   if (!todo) return;
   todo.done = !todo.done;
   saveTodos();
-  Maybe.of(document.querySelector(`.todo[data-id="${todoId}"]`))
+  Maybe.of(document.querySelector(`.todo[data-id="${modelId}"]`))
     .bind(todoElement => todoElement.querySelector(".todo__title"))
     .do(subtitle => subtitle.classList.toggle("todo-title_done"))
-    .bind(() => document.querySelector(`.todo[data-id="${todoId}"] .status__text`))
+    .bind(() => document.querySelector(`.todo[data-id="${modelId}"] .status__text`))
     .do(status => status.innerHTML = todo.done ? `${doneIcon()} Done` : `${progressIcon()} In progress`)
     .bind(() => document.querySelector(`#todo-filter`))
     .bind(filter => filter instanceof HTMLSelectElement ? filter.value : null)
     .do(filter => {
       if (filter === 'all') return;
-      const todoElement = document.querySelector(`.todo[data-id="${todoId}"]`);
+      const todoElement = document.querySelector(`.todo[data-id="${modelId}"]`);
       if (!todoElement) return;
       if (filter === 'true' && !todo.done) todoElement.remove();
       else if (filter === 'false' && todo.done) todoElement.remove();
@@ -84,14 +84,14 @@ function handleToggleTodo({ groupId, todoId }) {
 
 /**
  * 
- * @param {RemoveTodoParams} details 
+ * @param {RemoveCarParams} details
  */
-function handleRemoveTodo({ groupId, todoId }) {
+function handleRemoveTodo({ brandId, modelId }) {
   if (!confirm("Are you sure?")) return;
-  Maybe.of(getGroup({ id: groupId }))
-    .do(group => group.todos = group.todos.filter(todo => todo.id !== Number(todoId)))
+  Maybe.of(getGroup({ id: brandId }))
+    .do(group => group.todos = group.todos.filter(todo => todo.id !== Number(modelId)))
     .do(() => saveTodos())
-    .bind(() => document.querySelector(`.todo[data-id="${todoId}"]`))
+    .bind(() => document.querySelector(`.todo[data-id="${modelId}"]`))
     .do(todoElement => todoElement.remove());
 }
 
@@ -101,7 +101,7 @@ function handleRemoveTodo({ groupId, todoId }) {
  */
 function handleRemoveGroup({ groupId }) {
   if (!confirm("Are you sure?")) return;
-  Maybe.of(getTodoGroups())
+  Maybe.of(getCarBrands())
     .bind(groups => groups.filter(group => group.id !== Number(groupId)))
     .do(groups => saveTodos(groups))
     .bind(() => document.querySelector(`.group[data-id="${groupId}"]`))

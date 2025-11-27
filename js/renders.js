@@ -1,7 +1,7 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
 
-import { getTodoGroups } from './data.js';
+import { getCarBrands } from './data.js';
 import { observeList } from './event-handlers.js';
 import { dispatchShowGetFakeTodos, dispatchRemoveAllGroups, dispatchRemoveAllTodos, dispatchRemoveGroup, dispatchRemoveTodo, dispatchShowEditGroupForm, dispatchShowEditTodoForm, dispatchToggleTodo } from './events.js';
 import { handleAddTodo, handleAddTodoGroup, handleEditGroup, handleEditTodo } from './form-handlers.js';
@@ -15,7 +15,7 @@ export function renderNotFound() {
 }
 
 export function renderGroups() {
-  const groups = getTodoGroups();
+  const groups = getCarBrands();
   const page = fragment/*html*/`
     <div class="groups">
       <div class="header">
@@ -180,7 +180,7 @@ export function getTodosTemplate(group) {
     return /*html*/`
       <div class="list__item card todo" data-id="${todo.id}">
         <div class="card__card-header card-header todo-header ${todo.done ? 'todo-header_done' : ''}" 
-          onclick="${dispatchToggleTodo({ groupId: group.id, todoId: todo.id })}">
+          onclick="${dispatchToggleTodo({ brandId: group.id, modelId: todo.id })}">
           <h3 class="card-title card__card-title todo__title ${todo.done ? 'todo-title_done' : ''}">
             ${todo.title}
           </h3>
@@ -193,11 +193,11 @@ export function getTodosTemplate(group) {
           <div class="card__description description">${todo.description}</div>
         </div>
         <div class="card__toolbar toolbar">
-          <button class="button button_primary" onclick="${dispatchShowEditTodoForm({ groupId: group.id, todoId: todo.id })}">
+          <button class="button button_primary" onclick="${dispatchShowEditTodoForm({ brandId: group.id, modelId: todo.id })}">
             ${editIcon()}
             Edit
           </button>
-          <button class="button button_danger" onclick="${dispatchRemoveTodo({ groupId: group.id, todoId: todo.id })}">
+          <button class="button button_danger" onclick="${dispatchRemoveTodo({ brandId: group.id, modelId: todo.id })}">
             ${removeIcon()}
             Remove
           </button>

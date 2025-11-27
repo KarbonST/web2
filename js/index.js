@@ -1,7 +1,7 @@
 // @ts-check
 /// <reference path="./types.d.ts" />
 
-import { getGroup, getTodo, getTodoGroupById } from './data.js';
+import { getGroup, getTodo, getCarBrandById } from './data.js';
 import { handleClick, initCustomEvents } from './event-handlers.js';
 import { Maybe, fixHeightForm } from './helpers.js';
 import { renderGroups, renderTodos, renderNotFound, renderEditTodoForm, renderEditGroupForm } from './renders.js';
@@ -61,7 +61,7 @@ function router() {
         .get();
     case hash.startsWith("#/todos/"):
       const id = hash.split("/")[2];
-      const group = getTodoGroupById(id);
+      const group = getCarBrandById(id);
       if (group) return renderTodos(group);
       return renderNotFound();
     default:
